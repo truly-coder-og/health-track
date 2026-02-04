@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../groups/groups_list_screen.dart';
+import '../nutrition/nutrition_dashboard_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const DashboardPage(),
     const GroupsListScreen(),
     const WorkoutsPage(),
-    const NutritionPage(),
+    const NutritionDashboardScreen(),
     const ProfilePage(),
   ];
 
@@ -313,18 +314,6 @@ class WorkoutsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Workouts')),
       body: const Center(child: Text('Workouts - Bientôt disponible')),
-    );
-  }
-}
-
-class NutritionPage extends StatelessWidget {
-  const NutritionPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Nutrition')),
-      body: const Center(child: Text('Nutrition - Bientôt disponible')),
     );
   }
 }
