@@ -7,6 +7,7 @@ import 'config/supabase_config.dart';
 import 'database/local_database.dart';
 import 'providers/auth_provider.dart';
 import 'providers/groups_provider.dart';
+import 'providers/workouts_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/home/home_screen.dart';
 
@@ -37,6 +38,9 @@ class MyApp extends StatelessWidget {
         Provider<LocalDatabase>.value(value: database),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => GroupsProvider()),
+        ChangeNotifierProvider(
+          create: (context) => WorkoutsProvider(context.read<LocalDatabase>()),
+        ),
       ],
       child: MaterialApp(
         title: 'FitTogether',

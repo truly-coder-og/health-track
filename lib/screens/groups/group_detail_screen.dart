@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../providers/groups_provider.dart';
+import '../workouts/programs_list_screen.dart';
 
 class GroupDetailScreen extends StatefulWidget {
   final String groupId;
@@ -343,8 +344,14 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                       title: const Text('Programmes d\'entraînement'),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Bientôt disponible')),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ProgramsListScreen(
+                              groupId: widget.groupId,
+                              groupName: _group!['name'] ?? 'Groupe',
+                            ),
+                          ),
                         );
                       },
                     ),
