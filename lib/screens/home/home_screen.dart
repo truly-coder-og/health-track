@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../groups/groups_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _pages = [
     const DashboardPage(),
-    const GroupsPage(),
+    const GroupsListScreen(),
     const WorkoutsPage(),
     const NutritionPage(),
     const ProfilePage(),
@@ -303,22 +304,6 @@ class _ActionButton extends StatelessWidget {
 }
 
 // ==================== PLACEHOLDER PAGES ====================
-
-class GroupsPage extends StatelessWidget {
-  const GroupsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Mes groupes')),
-      body: const Center(child: Text('Groupes - Bientôt disponible')),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-}
 
 class WorkoutsPage extends StatelessWidget {
   const WorkoutsPage({super.key});
