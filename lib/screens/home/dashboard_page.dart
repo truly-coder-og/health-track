@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/groups_provider.dart';
 import '../../providers/workouts_provider.dart';
 import '../../providers/nutrition_provider.dart';
 import '../groups/groups_list_screen.dart';
 import '../nutrition/log_meal_screen.dart';
+import '../nutrition/set_goals_screen.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -15,11 +17,14 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  Map<String, int> _goals = {};
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadData();
+      _loadGoals();
     });
   }
 
@@ -34,6 +39,21 @@ class _DashboardPageState extends State<DashboardPage> {
         context.read<WorkoutsProvider>().loadMyLogs(userId),
         context.read<NutritionProvider>().loadTodayMeals(userId),
       ]);
+    }
+  }
+
+  Future<void> _loadGoals() async {
+    final goals = await GoalsHelper.getGoals();
+    setState(() => _goals = goals);
+  }
+
+  void _openGoals() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SetGoalsScreen()),
+    );
+    if (result == true) {
+      _loadGoals();
     }
   }
 
@@ -63,6 +83,11 @@ class _DashboardPageState extends State<DashboardPage> {
       appBar: AppBar(
         title: const Text('Dashboard'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.flag_outlined),
+            tooltip: 'Objectifs',
+            onPressed: _openGoals,
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadData,
@@ -189,35 +214,59 @@ class _DashboardPageState extends State<DashboardPage> {
 
               const SizedBox(height: 24),
 
-              // Macros summary (if has meals today)
-              if (todayMeals > 0) ...[
-                Text(
-                  'Macronutriments du jour',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+              // Goals progress
+              if (_goals.isNotEmpty && todayMeals > 0) ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Objectifs du jour',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    TextButton(
+                      onPressed: _openGoals,
+                      child: const Text('Modifier'),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 12),
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    child: Column(
                       children: [
-                        _MacroIndicator(
+                        _GoalProgress(
+                          label: 'Calories',
+                          current: todayCalories,
+                          goal: _goals['calories'] ?? 2000,
+                          color: Colors.orange,
+                          unit: 'kcal',
+                        ),
+                        const SizedBox(height: 16),
+                        _GoalProgress(
                           label: 'Protéines',
-                          value: nutritionProvider.todayStats['protein']?.toInt() ?? 0,
+                          current: nutritionProvider.todayStats['protein']?.toInt() ?? 0,
+                          goal: _goals['protein'] ?? 150,
                           color: Colors.blue,
+                          unit: 'g',
                         ),
-                        _MacroIndicator(
+                        const SizedBox(height: 16),
+                        _GoalProgress(
                           label: 'Glucides',
-                          value: nutritionProvider.todayStats['carbs']?.toInt() ?? 0,
+                          current: nutritionProvider.todayStats['carbs']?.toInt() ?? 0,
+                          goal: _goals['carbs'] ?? 200,
                           color: Colors.green,
+                          unit: 'g',
                         ),
-                        _MacroIndicator(
+                        const SizedBox(height: 16),
+                        _GoalProgress(
                           label: 'Lipides',
-                          value: nutritionProvider.todayStats['fat']?.toInt() ?? 0,
+                          current: nutritionProvider.todayStats['fat']?.toInt() ?? 0,
+                          goal: _goals['fat'] ?? 60,
                           color: Colors.purple,
+                          unit: 'g',
                         ),
                       ],
                     ),
@@ -482,6 +531,80 @@ class _ActionButton extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _GoalProgress extends StatelessWidget {
+  final String label;
+  final int current;
+  final int goal;
+  final Color color;
+  final String unit;
+
+  const _GoalProgress({
+    required this.label,
+    required this.current,
+    required this.goal,
+    required this.color,
+    required this.unit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = goal > 0 ? (current / goal).clamp(0.0, 1.0) : 0.0;
+    final percentage = (progress * 100).toInt();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            Text(
+              '$current / $goal $unit',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Stack(
+          children: [
+            Container(
+              height: 8,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            FractionallySizedBox(
+              widthFactor: progress,
+              child: Container(
+                height: 8,
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          '$percentage%',
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey.shade600,
+          ),
+        ),
+      ],
     );
   }
 }
