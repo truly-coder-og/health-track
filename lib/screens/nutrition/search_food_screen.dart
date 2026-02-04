@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/openfoodfacts_service.dart';
+import 'barcode_scanner_screen.dart';
 
 class SearchFoodScreen extends StatefulWidget {
   const SearchFoodScreen({super.key});
@@ -63,11 +64,31 @@ class _SearchFoodScreenState extends State<SearchFoodScreen> {
     });
   }
 
+  void _openScanner() async {
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const BarcodeScannerScreen(),
+      ),
+    );
+
+    if (result != null && mounted) {
+      Navigator.pop(context, result);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Rechercher un aliment'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.qr_code_scanner),
+            tooltip: 'Scanner code-barres',
+            onPressed: _openScanner,
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(

@@ -72,7 +72,23 @@ class WorkoutsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Workouts')),
+      appBar: AppBar(
+        title: const Text('Workouts'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            tooltip: 'Historique',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const WorkoutHistoryScreen(),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: const Center(
         child: Text(
           'Rejoins ou crée un groupe pour voir les programmes !',
@@ -80,6 +96,17 @@ class WorkoutsPage extends StatelessWidget {
           style: TextStyle(fontSize: 16),
         ),
       ),
+    );
+  }
+}
+
+class WorkoutHistoryScreen extends StatelessWidget {
+  const WorkoutHistoryScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(child: Text('Import workout_history_screen.dart')),
     );
   }
 }
