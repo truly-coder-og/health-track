@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../groups/groups_list_screen.dart';
 import '../nutrition/nutrition_dashboard_screen.dart';
+import 'dashboard_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -63,247 +64,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// ==================== DASHBOARD PAGE ====================
-
-class DashboardPage extends StatelessWidget {
-  const DashboardPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final authProvider = context.watch<AuthProvider>();
-    final user = authProvider.currentUser;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dashboard'),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Welcome card
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      child: Text(
-                        (user?.userMetadata?['name'] ?? 'U')[0].toUpperCase(),
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Salut ${user?.userMetadata?['name'] ?? 'Athlète'} !',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            "Prêt pour aujourd'hui ?",
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Colors.grey.shade600,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Quick stats
-            Text(
-              'Aujourd\'hui',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-
-            const SizedBox(height: 12),
-
-            Row(
-              children: [
-                Expanded(
-                  child: _StatCard(
-                    icon: Icons.local_fire_department,
-                    label: 'Calories',
-                    value: '0',
-                    color: Colors.orange,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _StatCard(
-                    icon: Icons.fitness_center,
-                    label: 'Workouts',
-                    value: '0',
-                    color: Colors.blue,
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-
-            Row(
-              children: [
-                Expanded(
-                  child: _StatCard(
-                    icon: Icons.restaurant,
-                    label: 'Repas',
-                    value: '0',
-                    color: Colors.green,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Expanded(
-                  child: _StatCard(
-                    icon: Icons.groups,
-                    label: 'Groupes',
-                    value: '0',
-                    color: Colors.purple,
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 24),
-
-            // Quick actions
-            Text(
-              'Actions rapides',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-
-            const SizedBox(height: 12),
-
-            _ActionButton(
-              icon: Icons.add_circle_outline,
-              label: 'Logger un workout',
-              onTap: () {
-                // TODO: Navigate to workout log
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Bientôt disponible !')),
-                );
-              },
-            ),
-
-            const SizedBox(height: 8),
-
-            _ActionButton(
-              icon: Icons.restaurant_menu,
-              label: 'Logger un repas',
-              onTap: () {
-                // TODO: Navigate to meal log
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Bientôt disponible !')),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color color;
-
-  const _StatCard({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Icon(icon, size: 32, color: color),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey.shade600,
-                  ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ActionButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  const _ActionButton({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Icon(icon, size: 28),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  label,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ),
-              const Icon(Icons.chevron_right),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 // ==================== PLACEHOLDER PAGES ====================
 
 class WorkoutsPage extends StatelessWidget {
@@ -313,7 +73,13 @@ class WorkoutsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Workouts')),
-      body: const Center(child: Text('Workouts - Bientôt disponible')),
+      body: const Center(
+        child: Text(
+          'Rejoins ou crée un groupe pour voir les programmes !',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 16),
+        ),
+      ),
     );
   }
 }
@@ -324,16 +90,103 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+    final user = authProvider.currentUser;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profil')),
       body: ListView(
         children: [
+          const SizedBox(height: 20),
+          
+          // User info
+          CircleAvatar(
+            radius: 50,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            child: Text(
+              (user?.userMetadata?['name'] ?? 'U')[0].toUpperCase(),
+              style: const TextStyle(
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          
+          Text(
+            user?.userMetadata?['name'] ?? 'Utilisateur',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          
+          const SizedBox(height: 4),
+          
+          Text(
+            user?.email ?? '',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.grey.shade600),
+          ),
+          
+          const SizedBox(height: 32),
+          
+          const Divider(),
+          
           ListTile(
-            leading: const Icon(Icons.logout),
-            title: const Text('Déconnexion'),
+            leading: const Icon(Icons.settings),
+            title: const Text('Paramètres'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Bientôt disponible')),
+              );
+            },
+          ),
+          
+          ListTile(
+            leading: const Icon(Icons.help_outline),
+            title: const Text('Aide'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Bientôt disponible')),
+              );
+            },
+          ),
+          
+          const Divider(),
+          
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.red),
+            title: const Text(
+              'Déconnexion',
+              style: TextStyle(color: Colors.red),
+            ),
             onTap: () async {
-              await authProvider.signOut();
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Déconnexion'),
+                  content: const Text('Es-tu sûr de vouloir te déconnecter ?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Annuler'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: TextButton.styleFrom(foregroundColor: Colors.red),
+                      child: const Text('Déconnexion'),
+                    ),
+                  ],
+                ),
+              );
+              
+              if (confirmed == true && context.mounted) {
+                await authProvider.signOut();
+              }
             },
           ),
         ],
