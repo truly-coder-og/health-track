@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/nutrition_provider.dart';
+import 'search_food_screen.dart';
 
 class LogMealScreen extends StatefulWidget {
   final String mealType;
@@ -108,11 +109,37 @@ class _LogMealScreenState extends State<LogMealScreen> {
     }
   }
 
+  void _searchFood() async {
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const SearchFoodScreen(),
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        _nameController.text = result['name'] ?? '';
+        _caloriesController.text = result['calories']?.toString() ?? '';
+        _proteinController.text = result['protein']?.toStringAsFixed(1) ?? '';
+        _carbsController.text = result['carbs']?.toStringAsFixed(1) ?? '';
+        _fatController.text = result['fat']?.toStringAsFixed(1) ?? '';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(_getMealTypeName()),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            tooltip: 'Rechercher un aliment',
+            onPressed: _searchFood,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -128,7 +155,32 @@ class _LogMealScreenState extends State<LogMealScreen> {
                 color: Theme.of(context).colorScheme.primary,
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: 16),
+
+              // Search button
+              OutlinedButton.icon(
+                onPressed: _searchFood,
+                icon: const Icon(Icons.search),
+                label: const Text('Rechercher dans Open Food Facts'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.all(16),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              const Row(
+                children: [
+                  Expanded(child: Divider()),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text('OU saisie manuelle'),
+                  ),
+                  Expanded(child: Divider()),
+                ],
+              ),
+
+              const SizedBox(height: 24),
 
               // Meal name
               TextFormField(
