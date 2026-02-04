@@ -48,6 +48,9 @@ app.*.map.json
 .env.local
 .env.*.local
 
+# Supabase config (contains API keys)
+lib/config/supabase_config.dart
+
 # Generated files
 *.g.dart
 *.freezed.dart

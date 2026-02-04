@@ -1,0 +1,11 @@
+/// Configuration Supabase
+/// 
+/// IMPORTANT: Copie ce fichier vers `supabase_config.dart` et remplace
+/// les valeurs par tes vraies clés Supabase.
+/// 
+/// Trouve tes clés sur: https://supabase.com/dashboard
+/// → Settings → API
+class SupabaseConfig {
+  static const String url = 'YOUR_SUPABASE_URL';
+  static const String anonKey = 'YOUR_SUPABASE_ANON_KEY';
+}
